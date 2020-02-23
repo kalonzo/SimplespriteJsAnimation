@@ -1,0 +1,129 @@
+<html><head>
+		<title>JavaScript Sprite Animation Tutorial</title>
+	</head>
+	<body class="expansion-alids-init">
+		
+		<center>
+			<canvas id="canvas" style="background-image: url(background.gif)" width="650" height="350"></canvas><br>
+					<button onclick="moveLeft()">Left</button>
+					<button onclick="moveRight()">Right</button>
+					<button onclick="stopFrame()">Stop Frame</button>		
+					<form>
+						<input id="timeLineTxt" type="text" >
+					</form>
+					<progress id="timeLineBar" value="0" max="93"></progress> 
+		</center>
+
+		<script>
+			var timeLine = 0;//controle la duré de l'animation / action a mettre en place sur la scene
+			//Dimension du Canevas (longeure de la scene)
+			var canvasWidth = 1200; 
+			var canvasHeight = 350;
+			//Dimension de l'animation sprite (charactere.png) 
+			var spriteWidth = 864; //8colone / 8 iconediférente 
+			var spriteHeight = 280; //2 colone 
+			//TODO
+			//Dimension de la spite sheet la premiere colone contient 8 image simulant pas a pas le déplacement droite et gauche 
+			var rows = 2; 
+			var cols = 8; 
+			//permet la detection / switch des colone representant le mouvement droite est gauche
+			var trackRight = 0; 
+			var trackLeft = 1; 
+			//TODO var trackJump = 3; representera la troisiéme ligne de la sprite sheet
+			
+			var width = spriteWidth/cols; // = 108 largeur dun carre d action
+			var height = spriteHeight/rows; // = 140 hauteur de 1 caree d action
+			
+			var curFrame = 0; //Initalisation du frame à afficher 
+			var breakFrame = 0; //permet de revenir en position lorsque le personnage s'arréte
+			var frameCount = 8;//Frame rate basé sur 8 action par colone definit par la sprite sheet designe sur Unity ou Photoshop 
+			
+			var stop=false;//controle si le personage s'arrête
+			
+			var x=0;
+			var y=200; 
+			
+			var srcX; 
+			var srcY; 
+			
+			var left = false; 
+			var right = true;
+			
+			var speed = 12; //vitesse du changement d'image
+			
+			var canvas = document.getElementById('canvas'); //récupération du canevas
+			canvas.width = canvasWidth;
+			canvas.height = canvasHeight; 
+			
+			var ctx = canvas.getContext("2d");
+			
+			var character = new Image(); 
+			character.src = "character.png";
+			
+			//Controle de l'animation
+			function updateFrame(){
+				//Controle de la timeline 
+				if(left==true){
+					timeLine--;
+				}else if(stop==true){
+				}
+				else{
+					timeLine++;
+				}
+				
+				curFrame = ++curFrame % frameCount; 				
+				srcX = curFrame * width; 
+				ctx.clearRect(x,y,width,height);
+				timeLineTxt.value = timeLine;
+				timeLineBar.value = timeLine;
+				
+				
+				if(left && x>0){
+					srcY = trackLeft * height; 
+					x-=speed; 
+				}
+				if(right && x<canvasWidth-width){
+					srcY = trackRight * height; 
+					x+=speed; 
+				}
+			}
+			
+			function stopFrame(){
+				 stop=true;
+			}
+			
+			function draw(){
+				if(stop==false){
+					updateFrame();
+					
+				}
+				
+				ctx.drawImage(character,srcX,srcY,width,height,x,y,width,height);
+				//if time line = 40 print seconde charactere 
+			}
+			
+			
+			function moveLeft(){
+			timeLine = timeLine--;
+				left = true; 
+				right = false; 
+				stop=false;
+			}
+			
+			function moveRight(){
+				left = false;
+				right = true; 
+				stop=false;
+			}
+			
+			setInterval(draw,100);
+			
+			let playerSpriteX = 0;
+
+			document.addEventListener('keyup', (e) => {
+			  moveLeft();
+			});
+			
+		</script>
+	
+</body></html>
